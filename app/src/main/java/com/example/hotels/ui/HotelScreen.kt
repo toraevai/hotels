@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -40,7 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hotels.R
 import com.example.hotels.model.Hotel
+import com.example.hotels.navigation.NavigationDestination
 import com.example.hotels.ui.parts.BottomBarWithButton
+import com.example.hotels.ui.parts.HotelsTopAppBar
 import com.example.hotels.ui.parts.PhotoListScreen
 import com.example.hotels.ui.parts.SmallTextWithImages
 import com.example.hotels.ui.theme.BackDarkGray
@@ -50,16 +53,25 @@ import com.example.hotels.ui.theme.DarkGray
 import com.example.hotels.ui.theme.Orange
 import java.text.NumberFormat
 
+object HotelScreen : NavigationDestination {
+    override val route = "hotel"
+    override val titleRes = "Отель"
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun HotelScreen() {
-    val viewModel: HotelsViewModel = viewModel()
-    val hotel = viewModel.hotel
+fun HotelScreen(
+    hotel: Hotel,
+    navigateToRooms: () -> Unit
+) {
     Scaffold(
+        topBar = {
+            HotelsTopAppBar(title = HotelScreen.titleRes, canNavigateBack = false)
+        },
         bottomBar = {
             BottomBarWithButton(
                 text = "К выбору номера",
-                onClick = {}
+                onClick = navigateToRooms
             )
         }
     ) { innerPadding ->
@@ -67,16 +79,16 @@ fun HotelScreen() {
             modifier = Modifier.consumeWindowInsets(innerPadding),
             contentPadding = innerPadding
         ) {
+            item { PhotosAndBasicData(hotel = hotel) }
+            item { Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small))) }
             item {
-                PhotosAndBasicData(hotel = hotel)
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                 DetailedHotelInfo(
                     hotel.aboutTheHotel.peculiarities,
                     hotel.aboutTheHotel.description,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium_12)))
             }
+            item { Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium_12))) }
         }
     }
 }
@@ -90,12 +102,6 @@ fun PhotosAndBasicData(hotel: Hotel, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
         ) {
-            Text(
-                text = "Отель",
-                style = MaterialTheme.typography.titleSmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
             PhotoListScreen(urls = hotel.imageUrls, modifier = Modifier.height(300.dp))
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
             SmallTextWithImages(

@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hotels.model.Hotel
 import com.example.hotels.model.HotelInfo
+import com.example.hotels.model.Room
 import com.example.hotels.network.HotelApi
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 
 class HotelsViewModel : ViewModel() {
-    var hotel by mutableStateOf<Hotel>(
+    var hotel by mutableStateOf(
         Hotel(
             id = 0,
             name = "test",
@@ -28,12 +30,21 @@ class HotelsViewModel : ViewModel() {
         )
     )
 
+    var listOfRooms by mutableStateOf((listOf<Room>()))
+
     init {
         getHotel()
+        getRooms()
     }
     private fun getHotel() {
         viewModelScope.launch {
             hotel = HotelApi.retrofitService.getHotel()
+        }
+    }
+
+    private fun getRooms() {
+        viewModelScope.launch {
+            listOfRooms = HotelApi.retrofitService.getRooms().rooms
         }
     }
 }
