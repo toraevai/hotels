@@ -7,7 +7,8 @@ import kotlinx.serialization.Serializable
 data class Hotel(
     val id: Int,
     val name: String,
-    val adress: String,
+    @SerialName("adress")
+    val address: String,
     @SerialName(value = "minimal_price")
     val minimalPrice: Int,
     @SerialName(value = "price_for_it")

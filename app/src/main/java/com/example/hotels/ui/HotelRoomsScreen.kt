@@ -1,5 +1,6 @@
 package com.example.hotels.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,7 @@ import com.example.hotels.ui.theme.Blue
 import com.example.hotels.ui.theme.DarkGray
 import java.text.NumberFormat
 
-object HotelRoomsScreen : NavigationDestination {
+object HotelRoomsDestination : NavigationDestination {
     override val route = "hotel_rooms"
     override val titleRes = "Комнаты"
 }
@@ -103,7 +104,8 @@ fun HotelRoom(
                 text = "Подробнее о номере",
                 endImage = R.drawable.navigate_next_24,
                 textColor = Blue,
-                backgroundColor = BackBlue
+                backgroundColor = BackBlue,
+                modifier = Modifier.clickable { }
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
             Row(verticalAlignment = Alignment.Bottom) {

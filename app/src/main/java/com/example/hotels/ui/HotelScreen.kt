@@ -32,17 +32,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hotels.R
 import com.example.hotels.model.Hotel
 import com.example.hotels.navigation.NavigationDestination
 import com.example.hotels.ui.parts.BottomBarWithButton
+import com.example.hotels.ui.parts.HotelInfo
 import com.example.hotels.ui.parts.HotelsTopAppBar
 import com.example.hotels.ui.parts.PhotoListScreen
 import com.example.hotels.ui.parts.SmallTextWithImages
@@ -53,7 +51,7 @@ import com.example.hotels.ui.theme.DarkGray
 import com.example.hotels.ui.theme.Orange
 import java.text.NumberFormat
 
-object HotelScreen : NavigationDestination {
+object HotelDestination : NavigationDestination {
     override val route = "hotel"
     override val titleRes = "Отель"
 }
@@ -66,7 +64,7 @@ fun HotelScreen(
 ) {
     Scaffold(
         topBar = {
-            HotelsTopAppBar(title = HotelScreen.titleRes, canNavigateBack = false)
+            HotelsTopAppBar(title = HotelDestination.titleRes, canNavigateBack = false)
         },
         bottomBar = {
             BottomBarWithButton(
@@ -104,24 +102,11 @@ fun PhotosAndBasicData(hotel: Hotel, modifier: Modifier = Modifier) {
         ) {
             PhotoListScreen(urls = hotel.imageUrls, modifier = Modifier.height(300.dp))
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-            SmallTextWithImages(
-                startImage = R.drawable.star_rate_12,
-                text = "${hotel.rating} ${hotel.ratingName}",
-                textColor = Orange,
-                backgroundColor = BackOrange,
-                modifier = modifier
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-            Text(
-                text = hotel.name,
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-            Text(
-                text = hotel.adress,
-                color = Blue,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.clickable { }
+            HotelInfo(
+                hotelRating = hotel.rating,
+                hotelRatingName = hotel.ratingName,
+                hotelName = hotel.name,
+                hotelAddress = hotel.address
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
             Row(verticalAlignment = Alignment.Bottom) {

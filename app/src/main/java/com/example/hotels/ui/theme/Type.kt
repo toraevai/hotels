@@ -38,5 +38,10 @@ val Typography = Typography(
         fontFamily = SfProDisplay,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = SfProDisplay,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
     )
 )

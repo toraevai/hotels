@@ -1,5 +1,6 @@
 package com.example.hotels.network
 
+import com.example.hotels.model.BookRoom
 import com.example.hotels.model.Hotel
 import com.example.hotels.model.HotelRooms
 import com.example.hotels.model.Room
@@ -22,6 +23,9 @@ interface HotelsApiService {
 
     @GET("8b532701-709e-4194-a41c-1a903af00195")
     suspend fun getRooms(): HotelRooms
+
+    @GET("63866c74-d593-432c-af8e-f279d1a8d2ff")
+    suspend fun getBooking(): BookRoom
 }
 
 object HotelApi {
