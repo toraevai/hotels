@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hotels.R
 import com.example.hotels.ui.theme.BackOrange
-import com.example.hotels.ui.theme.Orange
+import com.example.hotels.ui.theme.HotelsOrange
 
 @Composable
 fun SmallTextWithImages(
@@ -77,7 +77,7 @@ fun SmallTextWithImagesPreview() {
     SmallTextWithImages(
         startImage = R.drawable.star_rate_12,
         text = "5 Превосходно",
-        textColor = Orange,
+        textColor = HotelsOrange,
         backgroundColor = BackOrange
     )
 }

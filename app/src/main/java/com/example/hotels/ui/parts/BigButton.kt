@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.hotels.ui.theme.Blue
+import com.example.hotels.ui.theme.HotelsBlue
 
 @Composable
 fun BigButton(text: String, onClick:() -> Unit, modifier: Modifier = Modifier) {
     Button(
-        colors = ButtonDefaults.buttonColors(containerColor = Blue),
+        colors = ButtonDefaults.buttonColors(containerColor = HotelsBlue),
         shape = MaterialTheme.shapes.large,
         onClick = onClick,
         modifier = modifier.height(48.dp)

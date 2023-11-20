@@ -1,22 +1,19 @@
 package com.example.hotels.navigation
 
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.example.hotels.model.BookRoom
-import com.example.hotels.model.Hotel
-import com.example.hotels.model.Room
 import com.example.hotels.ui.BookingDestination
 import com.example.hotels.ui.BookingScreen
-import com.example.hotels.ui.HotelRoomsScreen
-import com.example.hotels.ui.HotelRoomsDestination
-import com.example.hotels.ui.HotelScreen
 import com.example.hotels.ui.HotelDestination
+import com.example.hotels.ui.HotelRoomsDestination
+import com.example.hotels.ui.HotelRoomsScreen
+import com.example.hotels.ui.HotelScreen
 import com.example.hotels.ui.HotelsViewModel
 import com.example.hotels.ui.PaidDestination
 import com.example.hotels.ui.PaidScreen
@@ -39,14 +36,16 @@ fun HotelsAppNavHost(
         composable(route = HotelDestination.route) {
             HotelScreen(
                 hotel = hotel,
-                navigateToRooms = { navController.navigate(HotelRoomsDestination.route) }
+                navigateToRooms = { navController.navigate(HotelRoomsDestination.route) },
+                modifier = Modifier.imePadding()
             )
         }
         composable(route = HotelRoomsDestination.route) {
             HotelRoomsScreen(
                 hotel = hotel,
                 hotelRooms = hotelRooms,
-                onClick = { navController.navigate(BookingDestination.route) })
+                onClick = { navController.navigate(BookingDestination.route) },
+                navigateBack = { navController.navigateUp() })
         }
         composable(route = BookingDestination.route) {
             BookingScreen(
@@ -56,6 +55,8 @@ fun HotelsAppNavHost(
                 touristsInfo = user.tourists,
                 onUserPhoneChange = { hotelsViewModel.changePhone(it) },
                 onUserMailChange = { hotelsViewModel.changeMail(it) },
+                emailChecked = hotelsViewModel.emailChecked,
+                checkEmail = { hotelsViewModel.checkEmail() },
                 addTourist = { hotelsViewModel.addTourist() },
                 onTouristNameChange = { index, name ->
                     hotelsViewModel.changeTouristName(index, name)
@@ -75,13 +76,21 @@ fun HotelsAppNavHost(
                 onTouristPassEndDateChange = { index, endDate ->
                     hotelsViewModel.changeTouristPassEndDate(index, endDate)
                 },
-                onPaidClick = { navController.navigate(PaidDestination.route) }
+                conditionsChecked = hotelsViewModel.touristsChecked,
+                onPaidClick = {
+                    if (!hotelsViewModel.touristsFieldsIsEmpty()) {
+                        navController.navigate(PaidDestination.route)
+                    }
+                },
+                navigateBack = { navController.navigateUp() }
             )
         }
         composable(
             route = PaidDestination.route
         ) {
-            PaidScreen(onBottomButtonClick = { navController.navigate(HotelDestination.route) })
+            PaidScreen(
+                onBottomButtonClick = { navController.navigate(HotelDestination.route) },
+                navigateBack = { navController.navigateUp() })
         }
     }
 }

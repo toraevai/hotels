@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun BottomBarWithButton(text: String, onClick: () -> Unit) {
+fun HotelsBottomBarWithButton(text: String, onClick: () -> Unit) {
     BottomAppBar {
         BigButton(text = text, onClick = onClick)
     }
@@ -13,6 +13,6 @@ fun BottomBarWithButton(text: String, onClick: () -> Unit) {
 
 @Preview
 @Composable
-fun BottomBarWithButtonPreview() {
-    BottomBarWithButton(text = "К выбору номера", onClick = {})
+fun HotelsBottomBarWithButtonPreview() {
+    HotelsBottomBarWithButton(text = "К выбору номера", onClick = {})
 }

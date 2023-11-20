@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGri
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -34,8 +36,8 @@ import com.example.hotels.ui.parts.PhotoListScreen
 import com.example.hotels.ui.parts.SmallTextWithImages
 import com.example.hotels.ui.theme.BackBlue
 import com.example.hotels.ui.theme.BackDarkGray
-import com.example.hotels.ui.theme.Blue
-import com.example.hotels.ui.theme.DarkGray
+import com.example.hotels.ui.theme.HotelsBlue
+import com.example.hotels.ui.theme.HotelsDarkGray
 import java.text.NumberFormat
 
 object HotelRoomsDestination : NavigationDestination {
@@ -45,10 +47,15 @@ object HotelRoomsDestination : NavigationDestination {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HotelRoomsScreen(hotel: Hotel, hotelRooms: List<Room>, onClick: () -> Unit) {
+fun HotelRoomsScreen(
+    hotel: Hotel,
+    hotelRooms: List<Room>,
+    navigateBack: () -> Unit,
+    onClick: () -> Unit
+) {
     Scaffold(
         topBar = {
-            HotelsTopAppBar(title = hotel.name, canNavigateBack = true)
+            HotelsTopAppBar(title = hotel.name, canNavigateBack = true, navigateUp = navigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
@@ -72,8 +79,11 @@ fun HotelRoom(
     modifier: Modifier = Modifier
 ) {
     Card(
+        modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        modifier = modifier
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
     ) {
         Column(
             modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
@@ -94,7 +104,7 @@ fun HotelRoom(
                 items(room.peculiarities) { peculiarities ->
                     SmallTextWithImages(
                         text = peculiarities,
-                        textColor = DarkGray,
+                        textColor = HotelsDarkGray,
                         backgroundColor = BackDarkGray
                     )
                 }
@@ -103,7 +113,7 @@ fun HotelRoom(
             SmallTextWithImages(
                 text = "Подробнее о номере",
                 endImage = R.drawable.navigate_next_24,
-                textColor = Blue,
+                textColor = HotelsBlue,
                 backgroundColor = BackBlue,
                 modifier = Modifier.clickable { }
             )
@@ -116,7 +126,7 @@ fun HotelRoom(
                         ) { append("${room.price} ${NumberFormat.getCurrencyInstance().currency!!.symbol} ") }
                         withStyle(
                             style = MaterialTheme.typography.bodyMedium.toSpanStyle()
-                                .copy(color = DarkGray),
+                                .copy(color = HotelsDarkGray),
                         ) { append(room.pricePer.lowercase()) }
                     }
                 )

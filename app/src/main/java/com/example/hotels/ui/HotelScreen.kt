@@ -2,7 +2,7 @@ package com.example.hotels.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGri
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -39,16 +41,14 @@ import androidx.compose.ui.unit.dp
 import com.example.hotels.R
 import com.example.hotels.model.Hotel
 import com.example.hotels.navigation.NavigationDestination
-import com.example.hotels.ui.parts.BottomBarWithButton
 import com.example.hotels.ui.parts.HotelInfo
+import com.example.hotels.ui.parts.HotelsBottomBarWithButton
 import com.example.hotels.ui.parts.HotelsTopAppBar
 import com.example.hotels.ui.parts.PhotoListScreen
 import com.example.hotels.ui.parts.SmallTextWithImages
 import com.example.hotels.ui.theme.BackDarkGray
-import com.example.hotels.ui.theme.BackOrange
-import com.example.hotels.ui.theme.Blue
-import com.example.hotels.ui.theme.DarkGray
-import com.example.hotels.ui.theme.Orange
+import com.example.hotels.ui.theme.HotelsDarkGray
+import com.example.hotels.ui.theme.HotelsGray
 import java.text.NumberFormat
 
 object HotelDestination : NavigationDestination {
@@ -60,24 +60,25 @@ object HotelDestination : NavigationDestination {
 @Composable
 fun HotelScreen(
     hotel: Hotel,
-    navigateToRooms: () -> Unit
+    navigateToRooms: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         topBar = {
             HotelsTopAppBar(title = HotelDestination.titleRes, canNavigateBack = false)
         },
         bottomBar = {
-            BottomBarWithButton(
+            HotelsBottomBarWithButton(
                 text = "К выбору номера",
                 onClick = navigateToRooms
             )
         }
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.consumeWindowInsets(innerPadding),
+            modifier = Modifier.background(HotelsGray),
             contentPadding = innerPadding
         ) {
-            item { PhotosAndBasicData(hotel = hotel) }
+            item { PhotosAndBasicData(hotel = hotel, modifier = Modifier.fillMaxWidth()) }
             item { Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small))) }
             item {
                 DetailedHotelInfo(
@@ -94,8 +95,11 @@ fun HotelScreen(
 @Composable
 fun PhotosAndBasicData(hotel: Hotel, modifier: Modifier = Modifier) {
     Card(
+        modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        modifier = modifier
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
     ) {
         Column(
             modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
@@ -117,7 +121,7 @@ fun PhotosAndBasicData(hotel: Hotel, modifier: Modifier = Modifier) {
                         ) { append("От ${hotel.minimalPrice} ${NumberFormat.getCurrencyInstance().currency!!.symbol} ") }
                         withStyle(
                             style = MaterialTheme.typography.bodyMedium.toSpanStyle()
-                                .copy(color = DarkGray),
+                                .copy(color = HotelsDarkGray),
                         ) { append(hotel.priceForIt.lowercase()) }
                     }
                 )
@@ -135,7 +139,10 @@ fun DetailedHotelInfo(
 ) {
     Card(
         shape = MaterialTheme.shapes.medium,
-        modifier = modifier.wrapContentHeight()
+        modifier = modifier.wrapContentHeight(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
     ) {
         Column(
             modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
@@ -154,7 +161,7 @@ fun DetailedHotelInfo(
                 items(hotelDetailedInfo) { info ->
                     SmallTextWithImages(
                         text = info,
-                        textColor = DarkGray,
+                        textColor = HotelsDarkGray,
                         backgroundColor = BackDarkGray
                     )
                 }
@@ -234,7 +241,7 @@ fun HotelFeature(
             )
             Text(
                 text = "Самое необходимое",
-                color = DarkGray,
+                color = HotelsDarkGray,
                 style = MaterialTheme.typography.bodySmall
             )
         }

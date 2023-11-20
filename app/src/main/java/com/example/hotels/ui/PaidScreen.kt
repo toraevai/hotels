@@ -24,9 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hotels.R
 import com.example.hotels.navigation.NavigationDestination
-import com.example.hotels.ui.parts.BottomBarWithButton
+import com.example.hotels.ui.parts.HotelsBottomBarWithButton
 import com.example.hotels.ui.parts.HotelsTopAppBar
-import com.example.hotels.ui.theme.DarkGray
+import com.example.hotels.ui.theme.HotelsDarkGray
 import com.example.hotels.ui.theme.HotelsTheme
 import kotlin.random.Random
 
@@ -39,15 +39,20 @@ object PaidDestination : NavigationDestination {
 @Composable
 fun PaidScreen(
     onBottomButtonClick: () -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            HotelsTopAppBar(title = BookingDestination.titleRes, canNavigateBack = true)
+            HotelsTopAppBar(
+                title = BookingDestination.titleRes,
+                canNavigateBack = true,
+                navigateUp = navigateBack
+            )
         },
         bottomBar = {
-            BottomBarWithButton(
+            HotelsBottomBarWithButton(
                 text = "Супер!",
                 onClick = onBottomButtonClick
             )
@@ -79,9 +84,14 @@ fun PaidScreen(
             Text(text = "Ваш заказ принят в работу", style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Подтверждение заказа №${Random.nextInt(0, 999999)} может занять некоторое время (от 1 часа до суток). Как только мы получим ответ от туроператора, вам на почту придет уведомление.",
+                text = "Подтверждение заказа №${
+                    Random.nextInt(
+                        0,
+                        999999
+                    )
+                } может занять некоторое время (от 1 часа до суток). Как только мы получим ответ от туроператора, вам на почту придет уведомление.",
                 modifier = Modifier.padding(horizontal = 23.dp),
-                color = DarkGray,
+                color = HotelsDarkGray,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
@@ -94,7 +104,8 @@ fun PaidScreen(
 fun PaidScreenPreview() {
     HotelsTheme {
         PaidScreen(
-            onBottomButtonClick = { /*TODO*/ },
+            onBottomButtonClick = {},
+            navigateBack = {},
             modifier = Modifier.fillMaxSize()
         )
     }

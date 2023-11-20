@@ -9,17 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import com.example.hotels.R
-import com.example.hotels.model.Hotel
 import com.example.hotels.ui.theme.BackOrange
-import com.example.hotels.ui.theme.Blue
-import com.example.hotels.ui.theme.Orange
+import com.example.hotels.ui.theme.HotelsBlue
+import com.example.hotels.ui.theme.HotelsOrange
 
 @Composable
 fun HotelInfo(hotelRating: Int, hotelRatingName: String, hotelName: String, hotelAddress: String, modifier: Modifier = Modifier) {
     SmallTextWithImages(
         startImage = R.drawable.star_rate_12,
         text = "$hotelRating $hotelRatingName",
-        textColor = Orange,
+        textColor = HotelsOrange,
         backgroundColor = BackOrange,
         modifier = modifier
     )
@@ -31,7 +30,7 @@ fun HotelInfo(hotelRating: Int, hotelRatingName: String, hotelName: String, hote
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
     Text(
         text = hotelAddress,
-        color = Blue,
+        color = HotelsBlue,
         style = MaterialTheme.typography.bodySmall,
         modifier = Modifier.clickable { }
     )

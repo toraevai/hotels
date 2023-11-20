@@ -8,27 +8,19 @@ import androidx.compose.ui.text.input.VisualTransformation
 class PhoneNumberTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val trimmed =
-            if (text.text.length >= 11) text.text.substring(0..10) else text.text
-        val out = "+7(***)***-**-**"
+            if (text.text.length >= 10) text.text.substring(0..9) else text.text
+        var out = if (text.isEmpty()) "" else "+7(***)***-**-**"
         for (i in trimmed.indices) {
-            out.replaceFirst("*", trimmed[i].toString())
+            out = out.replaceFirst("*",text[i].toString())
         }
 
         val phoneNumberOffsetTranslator = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
-                if (offset <= 2) return 0
-                if (offset <= 5) return offset
-                if (offset <= 9) return offset + 1
-                if (offset <= 12) return offset + 2
-                return 16
+                return if (text.isEmpty()) 0 else 15
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                if (offset <= 6) return offset
-                if (offset <= 10) return offset
-                if (offset <= 13) return offset - 1
-                if (offset <= 16) return offset - 2
-                return 10
+                return text.length
             }
         }
 

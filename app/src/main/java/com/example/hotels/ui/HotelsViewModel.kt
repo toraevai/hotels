@@ -1,11 +1,11 @@
 package com.example.hotels.ui
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hotels.data.HotelRepository
 import com.example.hotels.data.TouristInfo
 import com.example.hotels.data.UserInfo
 import com.example.hotels.model.BookRoom
@@ -13,12 +13,15 @@ import com.example.hotels.model.Hotel
 import com.example.hotels.model.HotelInfo
 import com.example.hotels.model.Room
 import com.example.hotels.network.HotelApi
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HotelsViewModel : ViewModel() {
+@HiltViewModel
+class HotelsViewModel @Inject constructor(val hotelRepository: HotelRepository) : ViewModel() {
     var hotel by mutableStateOf(
         Hotel(
             id = 0,
@@ -66,6 +69,8 @@ class HotelsViewModel : ViewModel() {
     )
     val userInfo: StateFlow<UserInfo> = _userInfo
 
+    var touristsChecked by mutableStateOf(false)
+    var emailChecked by mutableStateOf(false)
 
     init {
         getHotel()
@@ -134,5 +139,39 @@ class HotelsViewModel : ViewModel() {
 
     fun changeTouristPassEndDate(index: Int, endDate: String) {
         _userInfo.value.tourists[index].internationalPassportEndDate.value = endDate
+    }
+
+    fun checkEmail() {
+        emailChecked = true
+    }
+
+    fun touristsFieldsIsEmpty(): Boolean {
+        val tourists = _userInfo.value.tourists
+        var touristsHaveEmptyField = false
+        for (i in tourists.indices) {
+            if (tourists[i].name.value.isEmpty()) {
+                touristsHaveEmptyField = true
+            }
+            if (tourists[i].surname.value.isEmpty()) {
+                touristsHaveEmptyField = true
+            }
+            if (tourists[i].birthday.value.isEmpty()) {
+                touristsHaveEmptyField = true
+            }
+            if (tourists[i].citizenship.value.isEmpty()) {
+                touristsHaveEmptyField = true
+            }
+            if (tourists[i].internationalPassportNumber.value.isEmpty()) {
+                touristsHaveEmptyField = true
+            }
+            if (tourists[i].internationalPassportEndDate.value.isEmpty()) {
+                touristsHaveEmptyField = true
+            }
+            if (_userInfo.value.phone.isEmpty()) {
+                touristsHaveEmptyField = true
+            }
+        }
+        touristsChecked = true
+        return touristsHaveEmptyField
     }
 }
