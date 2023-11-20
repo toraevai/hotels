@@ -12,7 +12,6 @@ import com.example.hotels.model.BookRoom
 import com.example.hotels.model.Hotel
 import com.example.hotels.model.HotelInfo
 import com.example.hotels.model.Room
-import com.example.hotels.network.HotelApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -80,19 +79,19 @@ class HotelsViewModel @Inject constructor(val hotelRepository: HotelRepository) 
 
     private fun getHotel() {
         viewModelScope.launch {
-            hotel = HotelApi.retrofitService.getHotel()
+            hotel = hotelRepository.getHotel()
         }
     }
 
     private fun getRooms() {
         viewModelScope.launch {
-            listOfRooms = HotelApi.retrofitService.getRooms().rooms
+            listOfRooms = hotelRepository.getRooms().rooms
         }
     }
 
     private fun getBooking() {
         viewModelScope.launch {
-            booking = HotelApi.retrofitService.getBooking()
+            booking = hotelRepository.getBooking()
         }
     }
 

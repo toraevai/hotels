@@ -1,13 +1,13 @@
 package com.example.hotels.navigation
 
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.hotels.ui.BookingDestination
 import com.example.hotels.ui.BookingScreen
 import com.example.hotels.ui.HotelDestination
@@ -19,19 +19,16 @@ import com.example.hotels.ui.PaidDestination
 import com.example.hotels.ui.PaidScreen
 
 @Composable
-fun HotelsAppNavHost(
-    hotelsViewModel: HotelsViewModel,
-    navController: NavHostController,
-    modifier: Modifier = Modifier,
-) {
+fun HotelsAppNavHost() {
+    val hotelsViewModel = hiltViewModel<HotelsViewModel>()
+    val navController = rememberNavController()
     val hotel = hotelsViewModel.hotel
     val hotelRooms = hotelsViewModel.listOfRooms
     val room = hotelsViewModel.booking
     val user = hotelsViewModel.userInfo.collectAsState().value
     NavHost(
         navController = navController,
-        startDestination = HotelDestination.route,
-        modifier = modifier
+        startDestination = HotelDestination.route
     ) {
         composable(route = HotelDestination.route) {
             HotelScreen(

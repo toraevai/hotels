@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.hotels.ui.theme.HotelsBlue
 
 @Composable
-fun BigButton(text: String, onClick:() -> Unit, modifier: Modifier = Modifier) {
+fun BigButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         colors = ButtonDefaults.buttonColors(containerColor = HotelsBlue),
         shape = MaterialTheme.shapes.large,

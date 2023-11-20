@@ -45,7 +45,7 @@ fun SmallTextWithImages(
                 .wrapContentHeight()
                 .padding(horizontal = 10.dp, vertical = 5.dp)
         ) {
-            if (startImage != null){
+            if (startImage != null) {
                 Image(
                     painter = painterResource(startImage),
                     contentDescription = null,
@@ -58,7 +58,7 @@ fun SmallTextWithImages(
                 text = text,
                 style = MaterialTheme.typography.bodyMedium
             )
-            if (endImage != null){
+            if (endImage != null) {
                 Image(
                     painter = painterResource(endImage),
                     contentDescription = null,

@@ -1,6 +1,5 @@
 package com.example.hotels.ui
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -108,12 +107,23 @@ fun BookingScreen(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
         ) {
             item {
-                HotelInfo(
-                    hotelRating = room.rating,
-                    hotelRatingName = room.ratingName,
-                    hotelName = room.hotelName,
-                    hotelAddress = room.hotelAddress
-                )
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    )
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium)),
+                        modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
+                    ) {
+                        HotelInfo(
+                            hotelRating = room.rating,
+                            hotelRatingName = room.ratingName,
+                            hotelName = room.hotelName,
+                            hotelAddress = room.hotelAddress
+                        )
+                    }
+                }
             }
             item {
                 Card(
@@ -123,7 +133,7 @@ fun BookingScreen(
                 ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium)),
-                        modifier = Modifier.padding(all = 8.dp)
+                        modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
                     ) {
                         SingleBookingInfo(name = "Вылет из", info = room.departure)
                         SingleBookingInfo(name = "Страна, город", info = room.arrivalCountry)
@@ -168,7 +178,7 @@ fun BookingScreen(
                         EmailTextField(
                             userMail = userMail,
                             onUserMailChange = onUserMailChange,
-                            emailChecked = emailChecked,
+                            emailChecked = if (conditionsChecked) userPhone.isEmpty() else emailChecked,
                             checkEmail = checkEmail
                         )
                         Text(

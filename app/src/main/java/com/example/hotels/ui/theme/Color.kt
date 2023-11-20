@@ -2,15 +2,6 @@ package com.example.hotels.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
-
-val White = Color(0xFFFFFFFF)
 val HotelsGray = Color(0xFFF6F6F9)
 
 val HotelsOrange = Color(0xFFFFA800)
@@ -48,7 +39,6 @@ val md_theme_light_outline = Color(0xFF767680)
 val md_theme_light_inverseOnSurface = Color(0xFFEEF0FF)
 val md_theme_light_inverseSurface = Color(0xFF002B75)
 val md_theme_light_inversePrimary = Color(0xFFB9C3FF)
-val md_theme_light_shadow = Color(0xFF000000)
 val md_theme_light_surfaceTint = Color(0xFF4758A9)
 val md_theme_light_outlineVariant = Color(0xFFC6C5D0)
 val md_theme_light_scrim = Color(0xFF000000)
@@ -79,7 +69,6 @@ val md_theme_dark_outline = Color(0xFF90909A)
 val md_theme_dark_inverseOnSurface = Color(0xFF001849)
 val md_theme_dark_inverseSurface = Color(0xFFDBE1FF)
 val md_theme_dark_inversePrimary = Color(0xFF4758A9)
-val md_theme_dark_shadow = Color(0xFF000000)
 val md_theme_dark_surfaceTint = Color(0xFFB9C3FF)
 val md_theme_dark_outlineVariant = Color(0xFF45464F)
 val md_theme_dark_scrim = Color(0xFF000000)
