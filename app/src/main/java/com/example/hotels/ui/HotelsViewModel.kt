@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -70,29 +71,37 @@ class HotelsViewModel @Inject constructor(val hotelRepository: HotelRepository) 
 
     var touristsChecked by mutableStateOf(false)
     var emailChecked by mutableStateOf(false)
+    var connectionError by mutableStateOf(false)
 
     init {
-        getHotel()
-        getRooms()
-        getBooking()
+        getInfo()
     }
 
-    private fun getHotel() {
+    fun getInfo() {
         viewModelScope.launch {
-            hotel = hotelRepository.getHotel()
+            connectionError = try {
+                getHotel()
+                getRooms()
+                getBooking()
+                false
+            } catch (e: Exception) {
+                true
+            } catch (e: HttpException) {
+                true
+            }
         }
     }
 
-    private fun getRooms() {
-        viewModelScope.launch {
-            listOfRooms = hotelRepository.getRooms().rooms
-        }
+    private suspend fun getHotel() {
+        hotel = hotelRepository.getHotel()
     }
 
-    private fun getBooking() {
-        viewModelScope.launch {
-            booking = hotelRepository.getBooking()
-        }
+    private suspend fun getRooms() {
+        listOfRooms = hotelRepository.getRooms().rooms
+    }
+
+    private suspend fun getBooking() {
+        booking = hotelRepository.getBooking()
     }
 
     fun changePhone(phone: String) {

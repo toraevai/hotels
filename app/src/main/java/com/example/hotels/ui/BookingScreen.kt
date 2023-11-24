@@ -178,7 +178,7 @@ fun BookingScreen(
                         EmailTextField(
                             userMail = userMail,
                             onUserMailChange = onUserMailChange,
-                            emailChecked = if (conditionsChecked) userPhone.isEmpty() else emailChecked,
+                            isError  = if (emailChecked) !userMail.contains(Regex("\\w+@\\w+.\\w{2,}")) else false,
                             checkEmail = checkEmail
                         )
                         Text(
@@ -241,7 +241,7 @@ fun BookingScreen(
 fun EmailTextField(
     userMail: String,
     onUserMailChange: (String) -> Unit,
-    emailChecked: Boolean,
+    isError: Boolean,
     checkEmail: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -257,7 +257,7 @@ fun EmailTextField(
         label = "Почта",
         text = userMail,
         onValueChange = onUserMailChange,
-        isError = if (emailChecked) !userMail.contains(Regex("\\w+@\\w+.\\w{2,}")) else false,
+        isError = isError,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         interactionSource = interactionSource,
         modifier = Modifier.fillMaxWidth()

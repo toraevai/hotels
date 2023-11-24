@@ -1,5 +1,6 @@
 package com.example.hotels.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -10,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.hotels.ui.BookingDestination
 import com.example.hotels.ui.BookingScreen
+import com.example.hotels.ui.ErrorScreen
 import com.example.hotels.ui.HotelDestination
 import com.example.hotels.ui.HotelRoomsDestination
 import com.example.hotels.ui.HotelRoomsScreen
@@ -31,11 +33,15 @@ fun HotelsAppNavHost() {
         startDestination = HotelDestination.route
     ) {
         composable(route = HotelDestination.route) {
-            HotelScreen(
-                hotel = hotel,
-                navigateToRooms = { navController.navigate(HotelRoomsDestination.route) },
-                modifier = Modifier.imePadding()
-            )
+            if (hotelsViewModel.connectionError) {
+                ErrorScreen(retryAction = { hotelsViewModel.getInfo() }, modifier = Modifier.fillMaxSize())
+            } else {
+                HotelScreen(
+                    hotel = hotel,
+                    navigateToRooms = { navController.navigate(HotelRoomsDestination.route) },
+                    modifier = Modifier.imePadding()
+                )
+            }
         }
         composable(route = HotelRoomsDestination.route) {
             HotelRoomsScreen(
