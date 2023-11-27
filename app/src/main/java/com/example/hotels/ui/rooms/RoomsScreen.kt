@@ -1,10 +1,11 @@
-package com.example.hotels.ui
+package com.example.hotels.ui.rooms
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -30,6 +32,8 @@ import com.example.hotels.R
 import com.example.hotels.model.Hotel
 import com.example.hotels.model.Room
 import com.example.hotels.navigation.NavigationDestination
+import com.example.hotels.ui.parts.ErrorScreen
+import com.example.hotels.ui.parts.LoadingScreen
 import com.example.hotels.ui.parts.BigButton
 import com.example.hotels.ui.parts.HotelsTopAppBar
 import com.example.hotels.ui.parts.PhotoListScreen
@@ -40,18 +44,45 @@ import com.example.hotels.ui.theme.HotelsBlue
 import com.example.hotels.ui.theme.HotelsDarkGray
 import java.text.NumberFormat
 
-object HotelRoomsDestination : NavigationDestination {
-    override val route = "hotel_rooms"
-    override val titleRes = "Комнаты"
+object RoomsDestination : NavigationDestination {
+    override val route = "rooms"
+    override val titleRes = R.string.title_rooms_screen
+}
+
+
+@Composable
+fun RoomsScreen(
+    hotel: Hotel,
+    roomsUiState: RoomsUiState,
+    navigateBack: () -> Unit,
+    onRoomClick: () -> Unit,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (roomsUiState) {
+        is RoomsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+        is RoomsUiState.Success -> RoomsInfoScreen(
+            hotel = hotel,
+            hotelRooms = roomsUiState.listOfRooms,
+            navigateBack = navigateBack,
+            onRoomClick = onRoomClick
+        )
+
+        is RoomsUiState.Error -> ErrorScreen(
+            retryAction = retryAction,
+            modifier = modifier.fillMaxSize()
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HotelRoomsScreen(
+fun RoomsInfoScreen(
     hotel: Hotel,
     hotelRooms: List<Room>,
     navigateBack: () -> Unit,
-    onClick: () -> Unit
+    onRoomClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         topBar = {
@@ -60,13 +91,13 @@ fun HotelRoomsScreen(
     ) { paddingValues ->
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small)),
-            modifier = Modifier
+            modifier = modifier
                 .padding(vertical = dimensionResource(id = R.dimen.padding_small))
                 .padding(paddingValues)
         ) {
             item { Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small))) }
             items(hotelRooms) { room ->
-                HotelRoom(room = room, onClick = onClick)
+                HotelRoom(room = room, onClick = onRoomClick)
             }
         }
     }
@@ -111,7 +142,7 @@ fun HotelRoom(
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
             SmallTextWithImages(
-                text = "Подробнее о номере",
+                text = stringResource(R.string.more_info_about_room),
                 endImage = R.drawable.navigate_next_24,
                 textColor = HotelsBlue,
                 backgroundColor = BackBlue,
@@ -132,7 +163,7 @@ fun HotelRoom(
                 )
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-            BigButton(text = "Выбрать номер", onClick = onClick)
+            BigButton(text = stringResource(R.string.choose_room), onClick = onClick)
         }
     }
 }

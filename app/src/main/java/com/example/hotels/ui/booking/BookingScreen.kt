@@ -1,4 +1,4 @@
-package com.example.hotels.ui
+package com.example.hotels.ui.booking
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.FocusInteraction
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,9 +47,11 @@ import com.example.hotels.data.TouristInfo
 import com.example.hotels.data.emptyTourist
 import com.example.hotels.model.BookRoom
 import com.example.hotels.navigation.NavigationDestination
+import com.example.hotels.ui.parts.ErrorScreen
 import com.example.hotels.ui.parts.HotelInfo
 import com.example.hotels.ui.parts.HotelsBottomBarWithButton
 import com.example.hotels.ui.parts.HotelsTopAppBar
+import com.example.hotels.ui.parts.LoadingScreen
 import com.example.hotels.ui.parts.PhoneNumberTransformation
 import com.example.hotels.ui.theme.GrayLabel
 import com.example.hotels.ui.theme.HotelsBlue
@@ -58,12 +62,59 @@ import java.text.NumberFormat
 
 object BookingDestination : NavigationDestination {
     override val route = "booking"
-    override val titleRes = "Бронирование"
+    override val titleRes = R.string.title_booking_screen
+}
+
+@Composable
+fun BookingScreen(
+    bookingUiState: BookingUiState,
+    userPhone: String,
+    userMail: String,
+    touristsInfo: List<TouristInfo>,
+    onUserPhoneChange: (String) -> Unit,
+    onUserMailChange: (String) -> Unit,
+    emailChecked: Boolean,
+    checkEmail: () -> Unit,
+    addTourist: () -> Unit,
+    onTouristNameChange: (Int, String) -> Unit,
+    onTouristSurnameChange: (Int, String) -> Unit,
+    onTouristBirthdayChange: (Int, String) -> Unit,
+    onTouristCitizenshipChange: (Int, String) -> Unit,
+    onTouristPassNumChange: (Int, String) -> Unit,
+    onTouristPassEndDateChange: (Int, String) -> Unit,
+    conditionsChecked: Boolean,
+    onPaidClick: () -> Unit,
+    navigateBack: () -> Unit,
+    retryAction: () -> Unit
+) {
+    when (bookingUiState) {
+        is BookingUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
+        is BookingUiState.Success -> BookingRoomScreen(
+            room = bookingUiState.bookRoom,
+            userPhone = userPhone,
+            userMail = userMail,
+            touristsInfo = touristsInfo,
+            onUserPhoneChange = onUserPhoneChange,
+            onUserMailChange = onUserMailChange,
+            emailChecked = emailChecked,
+            checkEmail = checkEmail,
+            addTourist = addTourist,
+            onTouristNameChange = onTouristNameChange,
+            onTouristSurnameChange = onTouristSurnameChange,
+            onTouristBirthdayChange = onTouristBirthdayChange,
+            onTouristCitizenshipChange = onTouristCitizenshipChange,
+            onTouristPassNumChange = onTouristPassNumChange,
+            onTouristPassEndDateChange = onTouristPassEndDateChange,
+            conditionsChecked = conditionsChecked,
+            onPaidClick = onPaidClick,
+            navigateBack = navigateBack)
+        is BookingUiState.Error -> ErrorScreen(retryAction = retryAction, modifier = Modifier.fillMaxSize())
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookingScreen(
+fun BookingRoomScreen(
     room: BookRoom,
     userPhone: String,
     userMail: String,
@@ -88,14 +139,18 @@ fun BookingScreen(
         modifier = modifier,
         topBar = {
             HotelsTopAppBar(
-                title = BookingDestination.titleRes,
+                title = stringResource(BookingDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
         },
         bottomBar = {
             HotelsBottomBarWithButton(
-                text = "Оплатить ${room.tourPrice + room.fuelCharge + room.serviceCharge} ${NumberFormat.getCurrencyInstance().currency!!.symbol}",
+                text = stringResource(
+                    R.string.pay_booking,
+                    room.tourPrice + room.fuelCharge + room.serviceCharge,
+                    NumberFormat.getCurrencyInstance().currency!!.symbol
+                ),
                 onClick = onPaidClick
             )
         }
@@ -135,19 +190,19 @@ fun BookingScreen(
                         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium)),
                         modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
                     ) {
-                        SingleBookingInfo(name = "Вылет из", info = room.departure)
-                        SingleBookingInfo(name = "Страна, город", info = room.arrivalCountry)
+                        SingleBookingInfo(name = stringResource(R.string.departure), info = room.departure)
+                        SingleBookingInfo(name = stringResource(R.string.arrival), info = room.arrivalCountry)
                         SingleBookingInfo(
-                            name = "Даты",
+                            name = stringResource(R.string.travel_dates),
                             info = "${room.tourDateStart}-${room.tourDateStop}"
                         )
                         SingleBookingInfo(
-                            name = "Кол-во ночей",
+                            name = stringResource(R.string.number_of_nights),
                             info = room.numberOfNights.toString()
                         )
-                        SingleBookingInfo(name = "Отель", info = room.hotelName)
-                        SingleBookingInfo(name = "Номер", info = room.room)
-                        SingleBookingInfo(name = "Питание", info = room.nutrition)
+                        SingleBookingInfo(name = stringResource(R.string.hotel), info = room.hotelName)
+                        SingleBookingInfo(name = stringResource(R.string.room), info = room.room)
+                        SingleBookingInfo(name = stringResource(R.string.nutrition), info = room.nutrition)
                     }
                 }
             }
@@ -162,12 +217,12 @@ fun BookingScreen(
                         modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
                     ) {
                         Text(
-                            text = "Информация о покупателе",
+                            text = stringResource(R.string.user_info),
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
                         UserInfoSingleField(
-                            label = "Номер телефона",
+                            label = stringResource(R.string.user_phone_number),
                             text = userPhone,
                             onValueChange = onUserPhoneChange,
                             isError = if (conditionsChecked) userPhone.isEmpty() else false,
@@ -178,11 +233,11 @@ fun BookingScreen(
                         EmailTextField(
                             userMail = userMail,
                             onUserMailChange = onUserMailChange,
-                            isError  = if (emailChecked) !userMail.contains(Regex("\\w+@\\w+.\\w{2,}")) else false,
+                            isError = if (emailChecked) !userMail.contains(Regex("\\w+@\\w+.\\w{2,}")) else false,
                             checkEmail = checkEmail
                         )
                         Text(
-                            text = "Эти данные никому не передаются. После оплаты мы вышлем чек на указанные вами номер и почту",
+                            text = stringResource(R.string.public_offer),
                             style = MaterialTheme.typography.bodySmall,
                             color = HotelsDarkGray
                         )
@@ -214,19 +269,19 @@ fun BookingScreen(
                         modifier = Modifier.padding(all = 8.dp)
                     ) {
                         SinglePriceInfo(
-                            name = "Тур",
+                            name = stringResource(R.string.tour_price),
                             info = "${room.tourPrice} ${NumberFormat.getCurrencyInstance().currency!!.symbol}"
                         )
                         SinglePriceInfo(
-                            name = "Топлинвый сбор",
+                            name = stringResource(R.string.fuel_charge),
                             info = "${room.fuelCharge} ${NumberFormat.getCurrencyInstance().currency!!.symbol}"
                         )
                         SinglePriceInfo(
-                            name = "Сервисный сбор",
+                            name = stringResource(R.string.service_charge),
                             info = "${room.serviceCharge} ${NumberFormat.getCurrencyInstance().currency!!.symbol}"
                         )
                         SinglePriceInfo(
-                            name = "К оплате",
+                            name = stringResource(R.string.payment),
                             info = "${room.tourPrice + room.fuelCharge + room.serviceCharge} ${NumberFormat.getCurrencyInstance().currency!!.symbol}",
                             secondTextColor = HotelsBlue
                         )
@@ -254,7 +309,7 @@ fun EmailTextField(
         }
     }
     UserInfoSingleField(
-        label = "Почта",
+        label = stringResource(R.string.email),
         text = userMail,
         onValueChange = onUserMailChange,
         isError = isError,
@@ -378,15 +433,15 @@ fun Tourist(
             Row {
                 Text(
                     text = when (touristNumber) {
-                        1 -> "Первый турист"
-                        2 -> "Второй турист"
-                        3 -> "Третий турист"
-                        4 -> "Четвертый турист"
-                        5 -> "Пятый турист"
-                        6 -> "Шестой турист"
-                        7 -> "Седьмой турист"
-                        8 -> "Восьмой турист"
-                        9 -> "Девятый турист"
+                        1 -> stringResource(R.string.first_tourist)
+                        2 -> stringResource(R.string.second_tourist)
+                        3 -> stringResource(R.string.third_tourist)
+                        4 -> stringResource(R.string.fourth_tourist)
+                        5 -> stringResource(R.string.fifth_tourist)
+                        6 -> stringResource(R.string.sixth_tourist)
+                        7 -> stringResource(R.string.seventh_tourist)
+                        8 -> stringResource(R.string.eighth_tourist)
+                        9 -> stringResource(R.string.ninth_tourist)
                         else -> touristNumber.toString()
                     },
                     style = MaterialTheme.typography.headlineSmall,
@@ -395,7 +450,7 @@ fun Tourist(
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     painter = painterResource(id = if (isExpanded) R.drawable.expand_less else R.drawable.expand_more),
-                    contentDescription = "Добавить туриста",
+                    contentDescription = stringResource(R.string.add_tourist),
                     modifier = Modifier
                         .size(32.dp)
                         .clickable(onClick = { isExpanded = !isExpanded }),
@@ -405,42 +460,42 @@ fun Tourist(
             if (isExpanded) {
                 Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))) {
                     UserInfoSingleField(
-                        label = "Имя",
+                        label = stringResource(R.string.tourist_name),
                         text = touristInfo.name.value,
                         onValueChange = onNameChange,
                         isError = if (conditionsChecked) touristInfo.name.value.isEmpty() else false,
                         modifier = Modifier.fillMaxWidth()
                     )
                     UserInfoSingleField(
-                        label = "Фамилия",
+                        label = stringResource(R.string.tourist_surname),
                         text = touristInfo.surname.value,
                         onValueChange = onSurnameChange,
                         isError = if (conditionsChecked) touristInfo.surname.value.isEmpty() else false,
                         modifier = Modifier.fillMaxWidth()
                     )
                     UserInfoSingleField(
-                        label = "Дата рождения",
+                        label = stringResource(R.string.tourist_dirthday),
                         text = touristInfo.birthday.value,
                         onValueChange = onBirthdayChange,
                         isError = if (conditionsChecked) touristInfo.birthday.value.isEmpty() else false,
                         modifier = Modifier.fillMaxWidth()
                     )
                     UserInfoSingleField(
-                        label = "Гражданство",
+                        label = stringResource(R.string.tourist_citizenship),
                         text = touristInfo.citizenship.value,
                         onValueChange = onCitizenshipChange,
                         isError = if (conditionsChecked) touristInfo.citizenship.value.isEmpty() else false,
                         modifier = Modifier.fillMaxWidth()
                     )
                     UserInfoSingleField(
-                        label = "Номер загранпаспорта",
+                        label = stringResource(R.string.tourist_pass_num),
                         text = touristInfo.internationalPassportNumber.value,
                         onValueChange = onPassportNumberChange,
                         isError = if (conditionsChecked) touristInfo.internationalPassportNumber.value.isEmpty() else false,
                         modifier = Modifier.fillMaxWidth()
                     )
                     UserInfoSingleField(
-                        label = "Срок действия загранпаспорта",
+                        label = stringResource(R.string.tourist_pass_date),
                         text = touristInfo.internationalPassportEndDate.value,
                         onValueChange = onPassportEndDateChange,
                         isError = if (conditionsChecked) touristInfo.internationalPassportEndDate.value.isEmpty() else false,
@@ -457,14 +512,14 @@ fun AddTourist(onClick: () -> Unit) {
     Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
         Row(modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))) {
             Text(
-                text = "Добавить туриста",
+                text = stringResource(R.string.add_tourist),
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 painter = painterResource(id = R.drawable.add_box_32),
-                contentDescription = "Добавить туриста",
+                contentDescription = stringResource(R.string.add_tourist),
                 modifier = Modifier
                     .size(32.dp)
                     .clickable(onClick = onClick),

@@ -1,4 +1,4 @@
-package com.example.hotels.ui
+package com.example.hotels.ui.parts
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

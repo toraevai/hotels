@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Module
 object RetrofitModule {
 
-    val baseUrl = "https://run.mocky.io/v3/"
+    private const val baseUrl = "https://run.mocky.io/v3/"
 
     @Provides
     @Singleton

@@ -1,13 +1,12 @@
-package com.example.hotels.ui
+package com.example.hotels.ui.hotel
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.example.hotels.R
 import com.example.hotels.model.Hotel
 import com.example.hotels.navigation.NavigationDestination
+import com.example.hotels.ui.parts.ErrorScreen
+import com.example.hotels.ui.parts.LoadingScreen
 import com.example.hotels.ui.parts.HotelInfo
 import com.example.hotels.ui.parts.HotelsBottomBarWithButton
 import com.example.hotels.ui.parts.HotelsTopAppBar
@@ -51,29 +53,51 @@ import java.text.NumberFormat
 
 object HotelDestination : NavigationDestination {
     override val route = "hotel"
-    override val titleRes = "Отель"
+    override val titleRes = R.string.title_hotel_screen
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun HotelScreen(
+    hotelUiState: HotelUiState,
+    navigateToRooms: () -> Unit,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (hotelUiState) {
+        is HotelUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+        is HotelUiState.Success -> HotelInfoScreen(
+            hotel = hotelUiState.hotel,
+            navigateToRooms = navigateToRooms,
+            modifier = modifier.fillMaxSize()
+        )
+
+        is HotelUiState.Error -> ErrorScreen(retryAction = retryAction)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HotelInfoScreen(
     hotel: Hotel,
     navigateToRooms: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         topBar = {
-            HotelsTopAppBar(title = HotelDestination.titleRes, canNavigateBack = false)
+            HotelsTopAppBar(
+                title = stringResource(HotelDestination.titleRes),
+                canNavigateBack = false
+            )
         },
         bottomBar = {
             HotelsBottomBarWithButton(
-                text = "К выбору номера",
+                text = stringResource(R.string.hotel_screen_go_to_hotel_rooms),
                 onClick = navigateToRooms
             )
         }
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.background(HotelsGray),
+            modifier = modifier.background(HotelsGray),
             contentPadding = innerPadding
         ) {
             item { PhotosAndBasicData(hotel = hotel, modifier = Modifier.fillMaxWidth()) }
@@ -116,7 +140,15 @@ fun PhotosAndBasicData(hotel: Hotel, modifier: Modifier = Modifier) {
                     text = buildAnnotatedString {
                         withStyle(
                             style = MaterialTheme.typography.headlineMedium.toSpanStyle()
-                        ) { append("От ${hotel.minimalPrice} ${NumberFormat.getCurrencyInstance().currency!!.symbol} ") }
+                        ) {
+                            append(
+                                stringResource(
+                                    R.string.hotel_screen_min_price,
+                                    hotel.minimalPrice,
+                                    NumberFormat.getCurrencyInstance().currency!!.symbol
+                                )
+                            )
+                        }
                         withStyle(
                             style = MaterialTheme.typography.bodyMedium.toSpanStyle()
                                 .copy(color = HotelsDarkGray),
@@ -128,7 +160,6 @@ fun PhotosAndBasicData(hotel: Hotel, modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailedHotelInfo(
     hotelDetailedInfo: List<String>,
@@ -146,7 +177,7 @@ fun DetailedHotelInfo(
             modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
         ) {
             Text(
-                text = "Об отеле",
+                text = stringResource(R.string.hotel_screen_about_hotel),
                 style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
@@ -185,7 +216,7 @@ fun AdvancedFeatures(modifier: Modifier = Modifier) {
         Column(modifier = modifier.padding(all = 10.dp)) {
             HotelFeature(
                 icon = R.drawable.emoji_happy,
-                text = "Удобства",
+                text = stringResource(R.string.hotel_screen_amenities),
                 modifier = Modifier.fillMaxWidth()
             )
             Divider(
@@ -196,7 +227,7 @@ fun AdvancedFeatures(modifier: Modifier = Modifier) {
             )
             HotelFeature(
                 icon = R.drawable.tick,
-                text = "Что включено",
+                text = stringResource(R.string.hotel_screen_what_included),
                 modifier = Modifier.fillMaxWidth()
             )
             Divider(
@@ -207,7 +238,7 @@ fun AdvancedFeatures(modifier: Modifier = Modifier) {
             )
             HotelFeature(
                 icon = R.drawable.close,
-                text = "Что не включено",
+                text = stringResource(R.string.hotel_screen_what_is_not_included),
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -238,7 +269,7 @@ fun HotelFeature(
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "Самое необходимое",
+                text = stringResource(R.string.hotel_screen_essentials),
                 color = HotelsDarkGray,
                 style = MaterialTheme.typography.bodySmall
             )
@@ -246,7 +277,7 @@ fun HotelFeature(
         Spacer(modifier = Modifier.weight(1f))
         Icon(
             painter = painterResource(id = R.drawable.navigate_next_24),
-            contentDescription = "Перейти к $text",
+            contentDescription = stringResource(R.string.hotel_screen_go_to, text),
             modifier = Modifier
                 .size(24.dp)
         )

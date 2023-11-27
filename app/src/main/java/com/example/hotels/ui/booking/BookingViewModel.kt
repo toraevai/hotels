@@ -1,4 +1,4 @@
-package com.example.hotels.ui
+package com.example.hotels.ui.booking
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,9 +9,6 @@ import com.example.hotels.data.HotelRepository
 import com.example.hotels.data.TouristInfo
 import com.example.hotels.data.UserInfo
 import com.example.hotels.model.BookRoom
-import com.example.hotels.model.Hotel
-import com.example.hotels.model.HotelInfo
-import com.example.hotels.model.Room
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,46 +17,17 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
 
+sealed interface BookingUiState {
+    data class Success(val bookRoom: BookRoom) : BookingUiState
+    object Error : BookingUiState
+    object Loading : BookingUiState
+}
+
 @HiltViewModel
-class HotelsViewModel @Inject constructor(val hotelRepository: HotelRepository) : ViewModel() {
-    var hotel by mutableStateOf(
-        Hotel(
-            id = 0,
-            name = "test",
-            address = "123",
-            minimalPrice = 1500,
-            priceForIt = "lol",
-            rating = 5,
-            ratingName = "cool",
-            imageUrls = listOf(),
-            aboutTheHotel = HotelInfo(
-                description = "cool",
-                peculiarities = listOf()
-            )
-        )
-    )
-
-    var listOfRooms by mutableStateOf((listOf<Room>()))
-
-    var booking by mutableStateOf(
-        BookRoom(
-            id = 0,
-            hotelName = "test",
-            hotelAddress = "123",
-            rating = 5,
-            ratingName = "cool",
-            departure = "da",
-            arrivalCountry = "Pony Land",
-            tourDateStart = "Zavtra",
-            tourDateStop = "Poslezavtra",
-            numberOfNights = 1,
-            room = "great",
-            nutrition = "no",
-            tourPrice = 300,
-            fuelCharge = 150,
-            serviceCharge = 10
-        )
-    )
+class BookingViewModel @Inject constructor(private val hotelRepository: HotelRepository) :
+    ViewModel() {
+    var bookingUiState: BookingUiState by mutableStateOf(BookingUiState.Loading)
+        private set
 
     private val _userInfo = MutableStateFlow(
         UserInfo(
@@ -71,37 +39,18 @@ class HotelsViewModel @Inject constructor(val hotelRepository: HotelRepository) 
 
     var touristsChecked by mutableStateOf(false)
     var emailChecked by mutableStateOf(false)
-    var connectionError by mutableStateOf(false)
 
-    init {
-        getInfo()
-    }
-
-    fun getInfo() {
+    fun getBooking() {
         viewModelScope.launch {
-            connectionError = try {
-                getHotel()
-                getRooms()
-                getBooking()
-                false
+            bookingUiState = BookingUiState.Loading
+            bookingUiState = try {
+                BookingUiState.Success(hotelRepository.getBooking())
             } catch (e: Exception) {
-                true
+                BookingUiState.Error
             } catch (e: HttpException) {
-                true
+                BookingUiState.Error
             }
         }
-    }
-
-    private suspend fun getHotel() {
-        hotel = hotelRepository.getHotel()
-    }
-
-    private suspend fun getRooms() {
-        listOfRooms = hotelRepository.getRooms().rooms
-    }
-
-    private suspend fun getBooking() {
-        booking = hotelRepository.getBooking()
     }
 
     fun changePhone(phone: String) {

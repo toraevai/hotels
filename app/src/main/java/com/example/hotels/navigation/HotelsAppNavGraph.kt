@@ -1,91 +1,93 @@
 package com.example.hotels.navigation
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.hotels.ui.BookingDestination
-import com.example.hotels.ui.BookingScreen
-import com.example.hotels.ui.ErrorScreen
-import com.example.hotels.ui.HotelDestination
-import com.example.hotels.ui.HotelRoomsDestination
-import com.example.hotels.ui.HotelRoomsScreen
-import com.example.hotels.ui.HotelScreen
-import com.example.hotels.ui.HotelsViewModel
 import com.example.hotels.ui.PaidDestination
 import com.example.hotels.ui.PaidScreen
+import com.example.hotels.ui.booking.BookingDestination
+import com.example.hotels.ui.booking.BookingScreen
+import com.example.hotels.ui.booking.BookingViewModel
+import com.example.hotels.ui.hotel.HotelDestination
+import com.example.hotels.ui.hotel.HotelScreen
+import com.example.hotels.ui.hotel.HotelUiState
+import com.example.hotels.ui.hotel.HotelViewModel
+import com.example.hotels.ui.rooms.RoomsDestination
+import com.example.hotels.ui.rooms.RoomsScreen
+import com.example.hotels.ui.rooms.RoomsViewModel
 
 @Composable
 fun HotelsAppNavHost() {
-    val hotelsViewModel = hiltViewModel<HotelsViewModel>()
+    val hotelViewModel = hiltViewModel<HotelViewModel>()
+    val roomsViewModel = hiltViewModel<RoomsViewModel>()
+    val bookingViewModel = hiltViewModel<BookingViewModel>()
     val navController = rememberNavController()
-    val hotel = hotelsViewModel.hotel
-    val hotelRooms = hotelsViewModel.listOfRooms
-    val room = hotelsViewModel.booking
-    val user = hotelsViewModel.userInfo.collectAsState().value
+    val user = bookingViewModel.userInfo.collectAsState().value
     NavHost(
         navController = navController,
         startDestination = HotelDestination.route
     ) {
         composable(route = HotelDestination.route) {
-            if (hotelsViewModel.connectionError) {
-                ErrorScreen(retryAction = { hotelsViewModel.getInfo() }, modifier = Modifier.fillMaxSize())
-            } else {
-                HotelScreen(
-                    hotel = hotel,
-                    navigateToRooms = { navController.navigate(HotelRoomsDestination.route) },
-                    modifier = Modifier.imePadding()
-                )
-            }
+            HotelScreen(
+                hotelUiState = hotelViewModel.hotelUiState,
+                navigateToRooms = {
+                    roomsViewModel.getRooms()
+                    navController.navigate(RoomsDestination.route)
+                },
+                retryAction = { hotelViewModel.getHotel() }
+            )
         }
-        composable(route = HotelRoomsDestination.route) {
-            HotelRoomsScreen(
-                hotel = hotel,
-                hotelRooms = hotelRooms,
-                onClick = { navController.navigate(BookingDestination.route) },
-                navigateBack = { navController.navigateUp() })
+        composable(route = RoomsDestination.route) {
+            RoomsScreen(
+                hotel = (hotelViewModel.hotelUiState as HotelUiState.Success).hotel,
+                roomsUiState = roomsViewModel.roomsUiState,
+                navigateBack = { navController.navigateUp() },
+                onRoomClick = {
+                    bookingViewModel.getBooking()
+                    navController.navigate(BookingDestination.route)
+                },
+                retryAction = { hotelViewModel.getHotel() })
         }
         composable(route = BookingDestination.route) {
             BookingScreen(
-                room = room,
+                bookingUiState = bookingViewModel.bookingUiState,
                 userPhone = user.phone,
                 userMail = user.mail,
                 touristsInfo = user.tourists,
-                onUserPhoneChange = { hotelsViewModel.changePhone(it) },
-                onUserMailChange = { hotelsViewModel.changeMail(it) },
-                emailChecked = hotelsViewModel.emailChecked,
-                checkEmail = { hotelsViewModel.checkEmail() },
-                addTourist = { hotelsViewModel.addTourist() },
+                onUserPhoneChange = { bookingViewModel.changePhone(it) },
+                onUserMailChange = { bookingViewModel.changeMail(it) },
+                emailChecked = bookingViewModel.emailChecked,
+                checkEmail = { bookingViewModel.checkEmail() },
+                addTourist = { bookingViewModel.addTourist() },
                 onTouristNameChange = { index, name ->
-                    hotelsViewModel.changeTouristName(index, name)
+                    bookingViewModel.changeTouristName(index, name)
                 },
                 onTouristSurnameChange = { index, surname ->
-                    hotelsViewModel.changeTouristSurname(index, surname)
+                    bookingViewModel.changeTouristSurname(index, surname)
                 },
                 onTouristBirthdayChange = { index, birthday ->
-                    hotelsViewModel.changeTouristBirthday(index, birthday)
+                    bookingViewModel.changeTouristBirthday(index, birthday)
                 },
                 onTouristCitizenshipChange = { index, citizenship ->
-                    hotelsViewModel.changeTouristCitizenship(index, citizenship)
+                    bookingViewModel.changeTouristCitizenship(index, citizenship)
                 },
                 onTouristPassNumChange = { index, passNumber ->
-                    hotelsViewModel.changeTouristPassNumber(index, passNumber)
+                    bookingViewModel.changeTouristPassNumber(index, passNumber)
                 },
                 onTouristPassEndDateChange = { index, endDate ->
-                    hotelsViewModel.changeTouristPassEndDate(index, endDate)
+                    bookingViewModel.changeTouristPassEndDate(index, endDate)
                 },
-                conditionsChecked = hotelsViewModel.touristsChecked,
+                conditionsChecked = bookingViewModel.touristsChecked,
                 onPaidClick = {
-                    if (!hotelsViewModel.touristsFieldsIsEmpty()) {
+                    if (!bookingViewModel.touristsFieldsIsEmpty()) {
                         navController.navigate(PaidDestination.route)
                     }
                 },
-                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() },
+                retryAction = { bookingViewModel.getBooking() }
             )
         }
         composable(

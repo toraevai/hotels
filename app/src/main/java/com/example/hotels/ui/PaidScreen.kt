@@ -19,11 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hotels.R
 import com.example.hotels.navigation.NavigationDestination
+import com.example.hotels.ui.booking.BookingDestination
 import com.example.hotels.ui.parts.HotelsBottomBarWithButton
 import com.example.hotels.ui.parts.HotelsTopAppBar
 import com.example.hotels.ui.theme.HotelsDarkGray
@@ -32,7 +34,7 @@ import kotlin.random.Random
 
 object PaidDestination : NavigationDestination {
     override val route = "paid"
-    override val titleRes = "Заказ оплачен"
+    override val titleRes = R.string.title_paid_screen
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +48,7 @@ fun PaidScreen(
         modifier = modifier,
         topBar = {
             HotelsTopAppBar(
-                title = BookingDestination.titleRes,
+                title = stringResource(BookingDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
