@@ -71,7 +71,7 @@ fun HotelScreen(
             modifier = modifier.fillMaxSize()
         )
 
-        is HotelUiState.Error -> ErrorScreen(retryAction = retryAction)
+        is HotelUiState.Error -> ErrorScreen(retryAction = retryAction, modifier = modifier.fillMaxSize())
     }
 }
 

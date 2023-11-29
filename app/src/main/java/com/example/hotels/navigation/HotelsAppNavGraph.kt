@@ -25,6 +25,11 @@ fun HotelsAppNavHost() {
     val roomsViewModel = hiltViewModel<RoomsViewModel>()
     val bookingViewModel = hiltViewModel<BookingViewModel>()
     val navController = rememberNavController()
+    val hotelName: String = when (hotelViewModel.hotelUiState) {
+        is HotelUiState.Loading -> ""
+        is HotelUiState.Success -> (hotelViewModel.hotelUiState as HotelUiState.Success).hotel.name
+        is HotelUiState.Error -> ""
+    }
     val user = bookingViewModel.userInfo.collectAsState().value
     NavHost(
         navController = navController,
@@ -42,14 +47,14 @@ fun HotelsAppNavHost() {
         }
         composable(route = RoomsDestination.route) {
             RoomsScreen(
-                hotel = (hotelViewModel.hotelUiState as HotelUiState.Success).hotel,
+                hotelName = hotelName,
                 roomsUiState = roomsViewModel.roomsUiState,
                 navigateBack = { navController.navigateUp() },
                 onRoomClick = {
                     bookingViewModel.getBooking()
                     navController.navigate(BookingDestination.route)
                 },
-                retryAction = { hotelViewModel.getHotel() })
+                retryAction = { roomsViewModel.getRooms() })
         }
         composable(route = BookingDestination.route) {
             BookingScreen(
@@ -57,7 +62,7 @@ fun HotelsAppNavHost() {
                 userPhone = user.phone,
                 userMail = user.mail,
                 touristsInfo = user.tourists,
-                onUserPhoneChange = { bookingViewModel.changePhone(it) },
+                onUserPhoneChange = { if (it.length <= 10) bookingViewModel.changePhone(it) },
                 onUserMailChange = { bookingViewModel.changeMail(it) },
                 emailChecked = bookingViewModel.emailChecked,
                 checkEmail = { bookingViewModel.checkEmail() },

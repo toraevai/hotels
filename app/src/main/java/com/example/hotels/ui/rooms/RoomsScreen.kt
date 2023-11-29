@@ -29,13 +29,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.hotels.R
-import com.example.hotels.model.Hotel
 import com.example.hotels.model.Room
 import com.example.hotels.navigation.NavigationDestination
-import com.example.hotels.ui.parts.ErrorScreen
-import com.example.hotels.ui.parts.LoadingScreen
 import com.example.hotels.ui.parts.BigButton
+import com.example.hotels.ui.parts.ErrorScreen
 import com.example.hotels.ui.parts.HotelsTopAppBar
+import com.example.hotels.ui.parts.LoadingScreen
 import com.example.hotels.ui.parts.PhotoListScreen
 import com.example.hotels.ui.parts.SmallTextWithImages
 import com.example.hotels.ui.theme.BackBlue
@@ -52,7 +51,7 @@ object RoomsDestination : NavigationDestination {
 
 @Composable
 fun RoomsScreen(
-    hotel: Hotel,
+    hotelName: String,
     roomsUiState: RoomsUiState,
     navigateBack: () -> Unit,
     onRoomClick: () -> Unit,
@@ -62,7 +61,7 @@ fun RoomsScreen(
     when (roomsUiState) {
         is RoomsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
         is RoomsUiState.Success -> RoomsInfoScreen(
-            hotel = hotel,
+            hotelName = hotelName,
             hotelRooms = roomsUiState.listOfRooms,
             navigateBack = navigateBack,
             onRoomClick = onRoomClick
@@ -78,7 +77,7 @@ fun RoomsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoomsInfoScreen(
-    hotel: Hotel,
+    hotelName: String,
     hotelRooms: List<Room>,
     navigateBack: () -> Unit,
     onRoomClick: () -> Unit,
@@ -86,7 +85,7 @@ fun RoomsInfoScreen(
 ) {
     Scaffold(
         topBar = {
-            HotelsTopAppBar(title = hotel.name, canNavigateBack = true, navigateUp = navigateBack)
+            HotelsTopAppBar(title = hotelName, canNavigateBack = true, navigateUp = navigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
