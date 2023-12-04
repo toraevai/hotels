@@ -225,7 +225,7 @@ fun BookingRoomScreen(
                             label = stringResource(R.string.user_phone_number),
                             text = userPhone,
                             onValueChange = onUserPhoneChange,
-                            isError = if (conditionsChecked) userPhone.isEmpty() else false,
+                            isError = if (conditionsChecked) userPhone.length != 10 else false,
                             visualTransformation = PhoneNumberTransformation(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth()

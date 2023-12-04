@@ -129,6 +129,7 @@ class BookingViewModel @Inject constructor(private val hotelRepository: HotelRep
             }
         }
         touristsChecked = true
+        checkEmail()
         return touristsHaveEmptyField
     }
 }
